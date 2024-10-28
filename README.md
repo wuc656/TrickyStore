@@ -1,6 +1,6 @@
 # Tricky Store
 
-A trick of keystore. **Android 12 or above is required**.
+A trick of keystore. **Android 10 or above is required**.
 
 This module is used for modifying the certificate chain generated for android key attestation.
 
