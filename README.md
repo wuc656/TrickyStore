@@ -4,11 +4,11 @@ A trick of keystore. **Android 10 or above is required**.
 
 This module is used for modifying the certificate chain generated for android key attestation.
 
-## Stop opening source / 停止开源
+[中文 README](README.zh-CN.md)
+
+## Stop opening source
 
 Due to the rampant misuse and the contributions received after open-sourcing being less than expected, this module will be closed-source starting from version 1.1.0.
-
-考虑到二改泛滥，且开源后获得的贡献少于预期，因此本模块自 1.1.0 版本起闭源发布。
 
 ## Usage
 
@@ -69,9 +69,33 @@ io.github.vvb2060.mahoshojo?
 com.google.android.gms!
 ```
 
-## TODO
+## Customize security patch level (1.2.1+)
 
-- [Support Android 11 and below.](https://github.com/5ec1cff/TrickyStore/issues/25#issuecomment-2250588463)
+Create the file `/data/adb/tricky_store/security_patch.txt`.
+
+Simple:
+
+```
+# Hack os/vendor/boot security patch level
+20241101
+```
+
+Advanced:
+
+```
+# os security patch level is 202411
+system=202411
+# do not hack boot patch level
+boot=no
+# vendor patch level is 20241101 (another format)
+vendor=2024-11-01
+# default value
+# all=20241101
+# keep consistent with system prop
+# system=prop
+```
+
+Note: this feature will only hack the result of KeyAttestation, it will not do resetprop, you need do it yourself.
 
 ## Acknowledgement
 

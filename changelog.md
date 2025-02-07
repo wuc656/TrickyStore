@@ -1,3 +1,11 @@
+# 1.2.1
+
+支持自定义安全补丁级别（请参见 README.md）
+
+---
+
+Support customizing security patch level (please refer to README.md)
+
 # 1.2.0
 
 修复注入失败的问题
