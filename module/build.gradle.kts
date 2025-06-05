@@ -1,6 +1,8 @@
 import android.databinding.tool.ext.capitalizeUS
+import org.apache.commons.codec.binary.Hex
 import org.apache.tools.ant.filters.FixCrLfFilter
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.kotlin.dsl.register
 import java.security.MessageDigest
 
 plugins {
@@ -82,7 +84,7 @@ afterEvaluate {
         val zipFileName =
             "$moduleName-$verName-$verCode-$commitHash-$buildTypeLowered.zip".replace(' ', '-')
 
-        val prepareModuleFilesTask = task<Sync>("prepareModuleFiles$variantCapped") {
+        val prepareModuleFilesTask = tasks.register<Sync>("prepareModuleFiles$variantCapped") {
             group = "module"
             dependsOn(
                 "assemble$variantCapped",
@@ -133,7 +135,7 @@ afterEvaluate {
                         md.update(bytes, 0, size)
                     }
                     file(file.path + ".sha256").writeText(
-                        org.apache.commons.codec.binary.Hex.encodeHexString(
+                        Hex.encodeHexString(
                             md.digest()
                         )
                     )
@@ -141,7 +143,7 @@ afterEvaluate {
             }
         }
 
-        val zipTask = task<Zip>("zip$variantCapped") {
+        val zipTask = tasks.register<Zip>("zip$variantCapped") {
             group = "module"
             dependsOn(prepareModuleFilesTask)
             archiveFileName.set(zipFileName)
@@ -149,13 +151,13 @@ afterEvaluate {
             from(moduleDir)
         }
 
-        val pushTask = task<Exec>("push$variantCapped") {
+        val pushTask = tasks.register<Exec>("push$variantCapped") {
             group = "module"
             dependsOn(zipTask)
             commandLine("adb", "push", zipTask.outputs.files.singleFile.path, "/data/local/tmp")
         }
 
-        val installKsuTask = task<Exec>("installKsu$variantCapped") {
+        val installKsuTask = tasks.register<Exec>("installKsu$variantCapped") {
             group = "module"
             dependsOn(pushTask)
             commandLine(
@@ -164,7 +166,7 @@ afterEvaluate {
             )
         }
 
-        val installMagiskTask = task<Exec>("installMagisk$variantCapped") {
+        val installMagiskTask = tasks.register<Exec>("installMagisk$variantCapped") {
             group = "module"
             dependsOn(pushTask)
             commandLine(
@@ -177,13 +179,13 @@ afterEvaluate {
             )
         }
 
-        task<Exec>("installKsuAndReboot$variantCapped") {
+        tasks.register<Exec>("installKsuAndReboot$variantCapped") {
             group = "module"
             dependsOn(installKsuTask)
             commandLine("adb", "reboot")
         }
 
-        task<Exec>("installMagiskAndReboot$variantCapped") {
+        tasks.register<Exec>("installMagiskAndReboot$variantCapped") {
             group = "module"
             dependsOn(installMagiskTask)
             commandLine("adb", "reboot")
