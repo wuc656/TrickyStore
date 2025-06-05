@@ -70,7 +70,7 @@ afterEvaluate {
         val variantCapped = variant.name.capitalizeUS()
         val buildTypeCapped = variant.buildType.name.replaceFirstChar { it.uppercase() }
         val buildTypeLowered = variant.buildType.name.lowercase()
-        val supportedAbis = abiList.map {
+        val supportedAbis = abiList.joinToString(" ") {
             when (it) {
                 "arm64-v8a" -> "arm64"
                 "armeabi-v7a" -> "arm"
@@ -78,7 +78,7 @@ afterEvaluate {
                 "x86_64" -> "x64"
                 else -> error("unsupported abi $it")
             }
-        }.joinToString(" ")
+        }
 
         val moduleDir = layout.buildDirectory.file("outputs/module/$variantLowered")
         val zipFileName =
@@ -154,7 +154,7 @@ afterEvaluate {
         val pushTask = tasks.register<Exec>("push$variantCapped") {
             group = "module"
             dependsOn(zipTask)
-            commandLine("adb", "push", zipTask.outputs.files.singleFile.path, "/data/local/tmp")
+            commandLine("adb", "push", zipTask.get().outputs.files.singleFile.path, "/data/local/tmp")
         }
 
         val installKsuTask = tasks.register<Exec>("installKsu$variantCapped") {
