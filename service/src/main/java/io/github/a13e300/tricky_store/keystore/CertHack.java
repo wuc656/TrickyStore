@@ -38,7 +38,7 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.bouncycastle.util.io.pem.PemReader;
+//import org.bouncycastle.util.io.pem.PemReader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -104,8 +104,14 @@ public final class CertHack {
     }
 
     private static Certificate parseCert(String cert) throws Throwable {
-        try (PemReader reader = new PemReader(new StringReader(UtilKt.trimLine(cert)))) {
-            return certificateFactory.generateCertificate(new ByteArrayInputStream(reader.readPemObject().getContent()));
+        try (PEMParser parser = new PEMParser(new StringReader(UtilKt.trimLine(cert)))) {
+            Object obj = parser.readObject();
+            if (obj instanceof X509CertificateHolder) {
+                return new JcaX509CertificateConverter().getCertificate((X509CertificateHolder) obj);
+            } else {
+                // 處理其他可能的返回類型
+                throw new CertificateParsingException("Unexpected PEM object type: " + obj.getClass().getName());
+            }
         }
     }
 
