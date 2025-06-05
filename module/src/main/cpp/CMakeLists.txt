@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.28...4.0.2)
 project(trick_store)
 
 find_package(cxx REQUIRED CONFIG)
